@@ -8,9 +8,10 @@ namespace SampleAPI.ViewModels
     public class BasicUserViewModel
     {
         public string Username { get; set; }
-
+        public string Password { get; set; }
+        public string Name { get; set; }
         public string Email { get; set; }
-
-        public bool IsActive { get; set; }
+        public int RolId { get; set; }
+        public string RolName { get; set; }
     }
 }

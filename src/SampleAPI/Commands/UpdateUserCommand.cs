@@ -8,9 +8,8 @@ namespace SampleAPI.Commands
 {
     public class UpdateUserCommand
     {
+        public string Name { get; set; }
         public string Email { get; set; }
-
-        [Required]
-        public bool IsActive { get; set; }
+        public int RolId { get; set; }
     }
 }

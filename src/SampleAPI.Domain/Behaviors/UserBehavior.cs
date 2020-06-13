@@ -19,17 +19,13 @@ namespace SampleAPI.Domain.Managers
         {
             if (user is null) throw new ArgumentNullException(nameof(user));
 
-            user.IsActive = true;
-            user.CreatedAt = DateTime.Now;
-            user.UpdatedAt = DateTime.Now;
+            user.RolId = 2;
             await _repository.CreateUserAsync(user);
         }
 
         public async Task UpdateUserAsync(User user)
         {
             if (user is null) throw new ArgumentNullException(nameof(user));
-
-            user.UpdatedAt = DateTime.Now;
             await _repository.UpdateUserAsync(user);
         }
 

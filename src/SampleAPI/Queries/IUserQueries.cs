@@ -1,4 +1,5 @@
 ﻿using SampleAPI.Domain;
+using SampleAPI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace SampleAPI.Queries
 {
     public interface IUserQueries
     {
-        Task<List<User>> FindAllAsync();
-        Task<User> FindByUsernameAsync(string username);
+        Task<List<BasicUserViewModel>> FindAllAsync();
+        Task<BasicUserViewModel> FindByUsernameAsync(string username);
     }
 }

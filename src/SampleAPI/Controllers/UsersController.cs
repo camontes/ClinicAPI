@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using SampleAPI.Commands;
 using SampleAPI.Domain;
@@ -29,7 +30,7 @@ namespace SampleAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(200)]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<BasicUserViewModel>>> GetAllAsync()
         {
             return await _queries.FindAllAsync();
         }
@@ -37,7 +38,7 @@ namespace SampleAPI.Controllers
         [HttpGet("{username}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<User>> GetByUsernameAsync(string username)
+        public async Task<ActionResult<BasicUserViewModel>> GetByUsernameAsync(string username)
         {
             var existingUser = await _queries.FindByUsernameAsync(username);
             if (existingUser == null)
@@ -47,38 +48,54 @@ namespace SampleAPI.Controllers
             return existingUser;
         }
 
+        [Route("ValidateCredentiales/{username}")]
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<BasicUserViewModel>> ValidateCredentials(string username, LoginCommand loginCommand)
+        {
+            var existingUser = await _queries.FindByUsernameAsync(username);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+            if (existingUser.Password != loginCommand.Password)
+            {
+                return NotFound();
+            }
+            return existingUser;
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<User>> CreateUserAsync(CreateUserCommand createUserCommand)
+        public async Task<ActionResult<BasicUserViewModel>> CreateUserAsync(CreateUserCommand createUserCommand)
         {
             var user = _mapper.Map<User>(createUserCommand);
             await _behavior.CreateUserAsync(user);
-            return CreatedAtAction(
-                nameof(GetByUsernameAsync), 
-                new { username = user.Username }, 
-                _mapper.Map<BasicUserViewModel>(user));
+
+            var userViewModel = await _queries.FindByUsernameAsync(user.Username);
+            return userViewModel;
         }
 
         [HttpPut("{username}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateUserAsync(string username, UpdateUserCommand updateUserCommand)
+        public async Task<ActionResult<BasicUserViewModel>> UpdateUserAsync(string username, UpdateUserCommand updateUserCommand)
         {
-            // We are re-using existing Queries
-            // you can also provide methods on the repository 
-            // (they could be exposed through a behavior class)
-            // strictly related with transactional logic and 
-            // completely specialize your queries with data displaying tasks.
+
             var existingUser = await _queries.FindByUsernameAsync(username);
             if (existingUser == null)
             {
                 return NotFound();
             }
 
-            _mapper.Map(updateUserCommand, existingUser);
-            await _behavior.UpdateUserAsync(existingUser);
-            return NoContent();
+            var user = _mapper.Map<User>(existingUser);
+            _mapper.Map(updateUserCommand, user);
+            await _behavior.UpdateUserAsync(user);
+
+            var userViewModel = await _queries.FindByUsernameAsync(user.Username);
+            return userViewModel;
         }
 
         [HttpDelete("{username}")]
@@ -92,7 +109,9 @@ namespace SampleAPI.Controllers
                 return NotFound();
             }
 
-            await _behavior.DeleteUserAsync(existingUser);
+            var user = _mapper.Map<User>(existingUser);
+
+            await _behavior.DeleteUserAsync(user);
             return NoContent();
         }
     }

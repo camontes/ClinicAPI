@@ -88,7 +88,6 @@ namespace SampleAPI.Tests
             {
                 Username = createUserCommand.Username,
                 Email = createUserCommand.Email,
-                IsActive = true
             };
             Assert.Equal(HttpStatusCode.Created, responseCreate.StatusCode);
             Assert.Equal(expectedBasicUser.Serialize(), contentCreate);
@@ -118,8 +117,7 @@ namespace SampleAPI.Tests
             var expectedBasicUser = new BasicUserViewModel
             {
                 Username = createUserCommand.Username,
-                Email = createUserCommand.Email,
-                IsActive = true
+                Email = createUserCommand.Email
             };
             Assert.Equal(HttpStatusCode.Created, responseCreate.StatusCode);
             Assert.Equal(expectedBasicUser.Serialize(), contentCreate);
@@ -128,9 +126,6 @@ namespace SampleAPI.Tests
             Assert.Equal(HttpStatusCode.OK, responseGetByUsername.StatusCode);
             Assert.Equal(createUserCommand.Username, resultUser.Username);
             Assert.Equal(createUserCommand.Email, resultUser.Email);
-            Assert.True(resultUser.IsActive);
-            Assert.NotNull(resultUser.CreatedAt);
-            Assert.NotNull(resultUser.UpdatedAt);
         }
     }
 }

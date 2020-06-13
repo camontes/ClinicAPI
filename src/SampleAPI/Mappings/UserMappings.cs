@@ -12,6 +12,8 @@ namespace SampleAPI.Mappings
             CreateMap<CreateUserCommand, User>();
             CreateMap<UpdateUserCommand, User>();
             CreateMap<User, BasicUserViewModel>();
+            CreateMap<BasicUserViewModel, User>();
+            CreateMap<UpdateUserCommand, BasicUserViewModel>();
         }
     }
 }

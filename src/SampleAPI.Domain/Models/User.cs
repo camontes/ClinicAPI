@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SampleAPI.Domain.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SampleAPI.Domain
 {
@@ -7,13 +9,12 @@ namespace SampleAPI.Domain
     {
         [Key]
         public string Username { get; set; }
-
+        public string Password { get; set; }
+        public string Name { get; set; }
         public string Email { get; set; }
+        public int RolId { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public DateTime? CreatedAt { get;  set; }
-
-        public DateTime? UpdatedAt { get; set; }
+        [ForeignKey("RolId")]
+        public virtual Rol Rol { get; set; }
     }
 }
