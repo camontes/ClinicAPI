@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using AutoMapper;
+using Newtonsoft.Json;
 using SampleAPI.Commands;
 using SampleAPI.Domain;
 using SampleAPI.Migrations.Data;
@@ -15,17 +16,6 @@ namespace SampleAPI.Tests
 {
     public class UsersControllerFunctionalTest : WebTest
     {
-        [Fact]
-        public async Task Get_ReturnsSeededList()
-        {
-            // Execute
-            var response = await _client.GetAsync(Endpoints.USERS);
-            var content = await response.Content.ReadAsStringAsync();
-
-            // Check
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(SeedExtensions.UsersSeed.Serialize(), content);
-        }
 
         [Fact]
         public async Task GetByUsername_UnexistingUser_ReturnsError()
@@ -39,93 +29,50 @@ namespace SampleAPI.Tests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
-        public async Task GetByUsername_User_ReturnsUser()
-        {
-            // Execute
-            var response = await _client.GetAsync(
-                $"{Endpoints.USERS}/{SeedExtensions.UsersSeed.FirstOrDefault().Username}");
-            var content = await response.Content.ReadAsStringAsync();
-
-            // Check
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(SeedExtensions.UsersSeed.FirstOrDefault().Serialize(), content);
-        }
 
         [Fact]
-        public async Task Create_WithoutUsername_ReturnsError()
+        public async Task Update_username_Error()
         {
             // Prepare
-            var createUserCommand = new CreateUserCommand
+            var updateUserCommand = new UpdateUserCommand
             {
-                Email = "something@nothing.com"
+                Email = "hola@hotmail.com",
+                Name = "juan",
+                RolId =1
             };
 
             // Execute
-            var response = await _client.PostAsJsonAsync(Endpoints.USERS, createUserCommand);
-            var content = await response.Content.ReadAsStringAsync();
+            var responseUpdate = await _client.PutAsJsonAsync($"{Endpoints.USERS}/unknown", updateUserCommand);
 
-            // Check
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task Create_ReturnsUser()
-        {
-            // Prepare
-            var createUserCommand = new CreateUserCommand
-            {
-                Username = "Mr. Test",
-                Email = "something@nothing.com"
-            };
-
-            // Execute
-            var responseCreate = await _client.PostAsJsonAsync(Endpoints.USERS, createUserCommand);
-            var contentCreate = await responseCreate.Content.ReadAsStringAsync();
-
-            // Check
-            var expectedBasicUser = new BasicUserViewModel
-            {
-                Username = createUserCommand.Username,
-                Email = createUserCommand.Email,
-            };
-            Assert.Equal(HttpStatusCode.Created, responseCreate.StatusCode);
-            Assert.Equal(expectedBasicUser.Serialize(), contentCreate);
+            Assert.Equal(HttpStatusCode.NotFound, responseUpdate.StatusCode);
 
         }
 
         [Fact]
-        public async Task Create_UserAndThenQuerying_ReturnsUser()
+        public async Task delete_username_Error()
+        {
+
+            // Execute
+            var responseDelete = await _client.DeleteAsync($"{Endpoints.USERS}/unknown");
+
+            Assert.Equal(HttpStatusCode.NotFound, responseDelete.StatusCode);
+
+        }
+
+        [Fact]
+        public async Task ValidateCredentialsUser()
         {
             // Prepare
-            var createUserCommand = new CreateUserCommand
+            var loginCommand = new LoginCommand
             {
-                Username = "MrTest",
-                Email = "something@nothing.com"
+                Password = "password123"
             };
 
             // Execute
-            var responseCreate = await _client.PostAsJsonAsync(Endpoints.USERS, createUserCommand);
-            var contentCreate = await responseCreate.Content.ReadAsStringAsync();
+            var responseUpdate = await _client.PostAsJsonAsync($"{Endpoints.VALIDATE}/unknown", loginCommand);
 
-            var responseGetByUsername = await _client.GetAsync(
-                $"{Endpoints.USERS}/{createUserCommand.Username}");
-            var resultUser = JsonConvert.DeserializeObject<User>(await responseGetByUsername.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.NotFound, responseUpdate.StatusCode);
 
-            // Check
-            // Creation
-            var expectedBasicUser = new BasicUserViewModel
-            {
-                Username = createUserCommand.Username,
-                Email = createUserCommand.Email
-            };
-            Assert.Equal(HttpStatusCode.Created, responseCreate.StatusCode);
-            Assert.Equal(expectedBasicUser.Serialize(), contentCreate);
-
-            // GetByUsername
-            Assert.Equal(HttpStatusCode.OK, responseGetByUsername.StatusCode);
-            Assert.Equal(createUserCommand.Username, resultUser.Username);
-            Assert.Equal(createUserCommand.Email, resultUser.Email);
         }
     }
 }
