@@ -75,7 +75,9 @@ namespace SampleAPI.Controllers
         [ProducesResponseType(404)]
         public async Task<ActionResult<MedicalAppointmentViewModel>> CreateMedicalAppointmentAsync(CreateMedicalAppointmentCommand createMedicalAppointmentCommand)
         {
+            DateTime dateTimeNow = DateTime.Now;
 
+            if (dateTimeNow > createMedicalAppointmentCommand.CreatedAt) return BadRequest();
             var existingUser = await _userQueries.FindByUsernameAsync(createMedicalAppointmentCommand.Username);
 
             if (existingUser == null) return NotFound();
@@ -89,6 +91,32 @@ namespace SampleAPI.Controllers
 
             var medicalAppointmentViewModel = await _queries.FindByIdAsync(medicalAppointment.Id);
             return medicalAppointmentViewModel;
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        public async Task<IActionResult> CancelMedicalAppointmentAsync(int id)
+        {
+            var existingMedicalAppointment = await _queries.FindByIdAsync(id);
+
+            if (existingMedicalAppointment == null)
+            {
+                return NotFound();
+            }
+
+            double hours = Math.Abs((DateTime.Now - existingMedicalAppointment.CreatedAt).TotalHours);
+
+            if (hours <= 24)
+            {
+                return Conflict();
+            }
+
+            var medicalAppointment = _mapper.Map<MedicalAppointment>(existingMedicalAppointment);
+
+            await _behavior.DeleteMedicalAppointmentAsync(medicalAppointment);
+            return NoContent();
         }
 
     }
