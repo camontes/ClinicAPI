@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SampleAPI.Commands;
+using SampleAPI.Domain.Behaviors;
+using SampleAPI.Domain.Models;
 using SampleAPI.Queries;
 using SampleAPI.ViewModels;
 
@@ -16,15 +19,18 @@ namespace SampleAPI.Controllers
     {
         private readonly IMedicalAppointmentQueries _queries;
 
+        private readonly IMedicalAppointmentBehavior _behavior;
+
         private readonly IUserQueries _userQueries;
 
         private readonly IMapper _mapper;
 
-        public MedicalAppointmentsController(IMedicalAppointmentQueries queries, IUserQueries userQueries, IMapper mapper)
+        public MedicalAppointmentsController(IMedicalAppointmentQueries queries, IUserQueries userQueries, IMedicalAppointmentBehavior behavior, IMapper mapper)
         {
             _queries = queries;
             _mapper = mapper;
             _userQueries = userQueries;
+            _behavior = behavior;
         }
 
         [HttpGet]
@@ -60,6 +66,29 @@ namespace SampleAPI.Controllers
                 return NotFound();
             }
             return existingMedicalAppointment;
+        }
+
+        [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<MedicalAppointmentViewModel>> CreateMedicalAppointmentAsync(CreateMedicalAppointmentCommand createMedicalAppointmentCommand)
+        {
+
+            var existingUser = await _userQueries.FindByUsernameAsync(createMedicalAppointmentCommand.Username);
+
+            if (existingUser == null) return NotFound();
+
+            var existingMedicalAppointment = await _queries.FindByCreatedAtUsernameAsync(createMedicalAppointmentCommand.CreatedAt, createMedicalAppointmentCommand.Username);
+
+            if (existingMedicalAppointment != null) return Conflict();
+
+            var medicalAppointment = _mapper.Map<MedicalAppointment>(createMedicalAppointmentCommand);
+            await _behavior.CreateMedicalAppointmentAsync(medicalAppointment);
+
+            var medicalAppointmentViewModel = await _queries.FindByIdAsync(medicalAppointment.Id);
+            return medicalAppointmentViewModel;
         }
 
     }

@@ -14,6 +14,7 @@ namespace SampleAPI.Mappings
         public MedicalAppointmentMappings()
         {
             CreateMap<CreateMedicalAppointmentCommand, MedicalAppointmentViewModel>();
+            CreateMap<CreateMedicalAppointmentCommand, MedicalAppointment>();
             CreateMap<MedicalAppointmentViewModel, MedicalAppointment>();
         }
     }

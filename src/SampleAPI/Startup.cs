@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SampleAPI.Domain.Behaviors;
 using SampleAPI.Domain.Infrastructure;
 using SampleAPI.Domain.Managers;
 using SampleAPI.Infrastructure;
@@ -47,6 +48,8 @@ namespace SampleAPI
 
             //MedicalAppointment
             services.AddScoped<IMedicalAppointmentQueries, MedicalAppointmentQueries>();
+            services.AddScoped<IMedicalAppointmentBehavior, MedicalAppointmentBehavior>();
+            services.AddScoped<IMedicalAppointmentRepository, MedicalAppointmentRepository>();
 
             // Add Automapper
             services.AddAutoMapper();
