@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SampleAPI.Queries
 {
-    interface IMedicalAppointmentQueries
+    public interface IMedicalAppointmentQueries
     {
         Task<List<MedicalAppointmentViewModel>> FindAllAsync();
         Task<MedicalAppointmentViewModel> FindByIdAsync(int id);
-        Task<MedicalAppointmentViewModel> FindByCretedAtAsync(DateTime createdAt);
-        Task<List<MedicalAppointmentViewModel>> FindByUsernameAllAsync(string username);
+        Task<MedicalAppointmentViewModel> FindByCreatedAtUsernameAsync(DateTime createdAt, string username);
+        Task<List<MedicalAppointmentViewModel>> FindByUsernameAsync(string username);
     }
 }

@@ -45,6 +45,9 @@ namespace SampleAPI
             services.AddScoped<IUserQueries, UserQueries>();
             services.AddScoped<IUserRepository, UserRepository>();
 
+            //MedicalAppointment
+            services.AddScoped<IMedicalAppointmentQueries, MedicalAppointmentQueries>();
+
             // Add Automapper
             services.AddAutoMapper();
 
