@@ -1,5 +1,6 @@
 ﻿using SampleAPI.Domain.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,5 +17,7 @@ namespace SampleAPI.Domain
 
         [ForeignKey("RolId")]
         public virtual Rol Rol { get; set; }
+
+        public virtual IEnumerable<MedicalAppointment> MedicalAppointment { get; set; }
     }
 }

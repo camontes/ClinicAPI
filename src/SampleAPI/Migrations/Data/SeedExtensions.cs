@@ -33,6 +33,29 @@ namespace SampleAPI.Migrations.Data
             }
         };
 
+        public static readonly TypeMedicalAppointment[] TypeMedicalAppointmentsSeed = new TypeMedicalAppointment[] {
+            new TypeMedicalAppointment
+            {
+                Id = 1,
+                Name = "Medicina General"
+            },
+             new TypeMedicalAppointment
+            {
+                Id = 2,
+                Name = "Odontología"
+            },
+              new TypeMedicalAppointment
+            {
+                Id = 3,
+                Name = "Pediatría"
+            },
+               new TypeMedicalAppointment
+            {
+                Id = 4,
+                Name = "Neurología"
+            },
+        };
+
         public static void Seed(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
@@ -41,6 +64,9 @@ namespace SampleAPI.Migrations.Data
             modelBuilder.Entity<Rol>().HasData(
               RolesSeed
            );
+            modelBuilder.Entity<TypeMedicalAppointment>().HasData(
+             TypeMedicalAppointmentsSeed
+          );
         }
     }
 }
