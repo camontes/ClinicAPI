@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SampleAPI.Commands;
@@ -68,6 +69,8 @@ namespace SampleAPI.Controllers
             return existingMedicalAppointment;
         }
 
+
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
@@ -93,6 +96,7 @@ namespace SampleAPI.Controllers
             return medicalAppointmentViewModel;
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

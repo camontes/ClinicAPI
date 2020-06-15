@@ -48,6 +48,7 @@ namespace SampleAPI.Controllers
             return existingUser;
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [Route("ValidateCredentiales/{username}")]
         [HttpPost]
         [ProducesResponseType(200)]
@@ -66,6 +67,7 @@ namespace SampleAPI.Controllers
             return existingUser;
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
@@ -78,6 +80,7 @@ namespace SampleAPI.Controllers
             return userViewModel;
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpPut("{username}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -98,6 +101,7 @@ namespace SampleAPI.Controllers
             return userViewModel;
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpDelete("{username}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
