@@ -34,6 +34,7 @@ namespace SampleAPI.Controllers
             _behavior = behavior;
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpGet]
         [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<MedicalAppointmentViewModel>>> GetAllAsync()
@@ -41,6 +42,7 @@ namespace SampleAPI.Controllers
             return await _queries.FindAllAsync();
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [Route("ByUsername/{username}")]
         [HttpGet]
         [ProducesResponseType(200)]
@@ -56,6 +58,7 @@ namespace SampleAPI.Controllers
             return await _queries.FindByUsernameAsync(username);
         }
 
+        [EnableCors("_myAllowSpecificOrigins")]
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
@@ -77,10 +80,10 @@ namespace SampleAPI.Controllers
         [ProducesResponseType(409)]
         [ProducesResponseType(404)]
         public async Task<ActionResult<MedicalAppointmentViewModel>> CreateMedicalAppointmentAsync(CreateMedicalAppointmentCommand createMedicalAppointmentCommand)
-        {
+            {
             DateTime dateTimeNow = DateTime.Now;
 
-            if (dateTimeNow > createMedicalAppointmentCommand.CreatedAt) return BadRequest();
+            if (dateTimeNow.Date > createMedicalAppointmentCommand.CreatedAt.Date) return BadRequest();
             var existingUser = await _userQueries.FindByUsernameAsync(createMedicalAppointmentCommand.Username);
 
             if (existingUser == null) return NotFound();

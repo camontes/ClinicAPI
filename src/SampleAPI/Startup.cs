@@ -99,6 +99,7 @@ namespace SampleAPI
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseCors(MyAllowSpecificOrigins);
+
         }
     }
 }

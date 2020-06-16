@@ -78,7 +78,7 @@ namespace SampleAPI.Queries
                     TypeMedicalAppointmentId = m.TypeMedicalAppointmentId,
                     TypeMedicalAppointmentName = m.TypeMedicalAppointment.Name
                 })
-                .FirstOrDefaultAsync(m => m.CreatedAt == createdAt  && m.CreatedAt.Year == createdAt.Year && m.CreatedAt.Month == createdAt.Month && m.CreatedAt.Day == createdAt.Day);
+                .FirstOrDefaultAsync(m => m.CreatedAt.Date == createdAt.Date && m.Username == username);
         }
     }
 
